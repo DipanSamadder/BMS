@@ -2,11 +2,20 @@ const express = require("express");
 const admin_route = express();
 const bodyParser = require("body-parser");
 const  adminController = require("../controllers/adminController");
+const adminLoginAuth = require('../middlewares/adminLoginAuth');
 const multer = require("multer");
 const path = require("path");
 
-admin_route.use(express.static('public'));
 
+
+
+const session = require("express-session");
+const config = require("../config/config");
+admin_route.use(session({
+    secret:config.sessionSecret,
+    resave: false,
+    saveUninitialized: true,
+}));
 
 const fs = require('fs');
 
@@ -36,8 +45,10 @@ admin_route.set('view engine', 'ejs');
 admin_route.set('views', './views');
 
 
-admin_route.get('/dashboard', adminController.dashboard);
+admin_route.get('/dashboard', adminLoginAuth.isLogin, adminController.dashboard);
 admin_route.get('/blog-setup', adminController.blogSetup);
 admin_route.post('/blog-setup', upload.single('blogfile'), adminController.blogSetupSave);
 
+admin_route.get('/create-post', adminLoginAuth.isLogin, adminController.loadPostCreate);
+admin_route.post('/create-post', adminLoginAuth.isLogin, adminController.addPost);
 module.exports = admin_route;

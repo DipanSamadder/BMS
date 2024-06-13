@@ -1,0 +1,21 @@
+<%- include("../../layouts/admin-header.ejs") %>
+    <!-- Page Content  -->
+    <div id="content" class="p-4 p-md-5 pt-5">
+        <h2 class="mb-4">Create Post</h2>
+        <form action="" method="POST">
+            <div class="mb-3">
+                <input type="text" class="w-100" name="title" placeholder="title" required>
+            </div>
+            <div class="mb-3">
+                <textarea class="w-100" name="content"  placeholder="content" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+        <% if(typeof message !== 'undefined'){ %>
+            <p style="color:green"><%= message %></p>
+        <% } %>
+        <% if(typeof error !== 'undefined'){ %>
+            <p style="color:red"><%= error %></p>
+        <% } %>
+	</div>
+<%- include("../../layouts/admin-footer.ejs") %>

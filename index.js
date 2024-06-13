@@ -7,7 +7,7 @@ mongoose.connect("mongodb://localhost:27017/BMS");
 
 const app = express();
 app.use(isBlog.isBlog);
-
+app.use(express.static('public'));
 
 app.use("/", adminRoute);
 app.use("/", userRoute);

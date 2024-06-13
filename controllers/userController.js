@@ -18,6 +18,14 @@ const profile = async(req, res) => {
     }
 }
 
+const logout = async(req, res) => {
+    try{
+        req.session.destroy();
+        res.redirect('/login');
+    }catch(error){
+        console.log(error.message);
+    }
+}
 const verifyLogin = async(req, res) => {
     try{
         const email = req.body.email;
@@ -51,5 +59,6 @@ const verifyLogin = async(req, res) => {
 module.exports = {
     Loadlogin,
     verifyLogin,
-    profile
+    profile,
+    logout
 }

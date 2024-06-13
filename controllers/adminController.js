@@ -1,4 +1,5 @@
 const BlogSetting = require('../models/blogSettingModels');
+const Post = require('../models/PostModels');
 const User = require("../models/userModels");
 const bcrypt = require("bcrypt");
 
@@ -13,7 +14,15 @@ const securePassword = async(password) => {
 
 const dashboard = async(req, res) => {
     try{
-        res.send('pages/dashboard');
+        res.render('admin/dashboard');
+    }catch(error){
+        console.log(error.message);
+    }
+}
+
+const loadPostCreate = async(req, res) => {
+    try{
+        res.render('admin/pages/create-post');
     }catch(error){
         console.log(error.message);
     }
@@ -32,6 +41,25 @@ const blogSetup = async(req, res) => {
     console.log(error.message);
    }
 }
+
+
+const addPost =  async(req, res) =>{
+    const { title, content } = req.body;
+
+    if (!title || !content) {
+        res.render('admin/pages/create-post', { error:'Title and content are required.' });
+    }
+    try{
+
+        const newPost = new Post({ title, content });
+        await newPost.save();
+        res.render('admin/pages/create-post', { message:'Post add succesfully.' });
+
+    }catch(error){  
+        console.log(error.message);
+    }
+}
+
 
 const blogSetupSave = async(req, res) => {
     try{
@@ -70,5 +98,7 @@ const blogSetupSave = async(req, res) => {
 module.exports = {
     blogSetup,
     blogSetupSave,
-    dashboard
+    dashboard,
+    loadPostCreate,
+    addPost
 }
