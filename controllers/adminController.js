@@ -44,14 +44,17 @@ const blogSetup = async(req, res) => {
 
 
 const addPost =  async(req, res) =>{
-    const { title, content } = req.body;
-
+    const { title, content, image } = req.body;
+    
     if (!title || !content) {
         res.render('admin/pages/create-post', { error:'Title and content are required.' });
     }
     try{
-
-        const newPost = new Post({ title, content });
+        var imagePath = '';
+        if(image !== undefined){
+            imagePath = image;
+        }
+        const newPost = new Post({ title, content, image});
         await newPost.save();
         res.render('admin/pages/create-post', { message:'Post add succesfully.' });
 
@@ -95,10 +98,22 @@ const blogSetupSave = async(req, res) => {
     }
 }
 
+const uploadPostImage = async(req, res) =>{
+    try{
+        var imagePath = '/images';
+        imagePath = imagePath+'/'+req.file.filename;
+        res.status(200).send({success:true, msg:"Post image uploaded", path:imagePath});
+    }catch(error){
+        res.status(200).send({success:false, msg:error.message});
+    }
+}
+
 module.exports = {
     blogSetup,
     blogSetupSave,
     dashboard,
     loadPostCreate,
-    addPost
+    addPost,
+    securePassword,
+    uploadPostImage
 }

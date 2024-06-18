@@ -1,0 +1,16 @@
+<%- include('../layouts/header.ejs') %>
+    <% if(typeof message !== 'undefined'){ %>
+    <p class="text-danger"><%= message %></p>
+    <% } %>
+<form action="" method="POST" class="m-5">
+    <h3>Reset Password</h3>
+    <div class="mb-3">
+    <input type="text" name="_id" value="<%= user_id%>" required>
+      <label class="form-label">Password</label>
+      <input type="text" name="password" class="form-control">
+    </div>
+
+    <button type="submit" class="btn btn-primary">Send</button>
+    <a href="/login">Login</a>
+  </form>
+<%- include('../layouts/footer.ejs') %>

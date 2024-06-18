@@ -18,13 +18,13 @@ user_route.use(bodyParser.urlencoded({extended:true}));
 user_route.set('view engine', 'ejs');
 user_route.set('views', './views');
 
-user_route.get('/',function(req, res){
-    res.render("index");
-});
-
 
 user_route.get('/profile', adminLoginAuth.isLogin, userController.profile);
 user_route.get('/login', adminLoginAuth.isLogout,  userController.Loadlogin);
 user_route.post('/login', userController.verifyLogin);
-user_route.get('/logout', adminLoginAuth.isLogin, userController.logout)
+user_route.get('/logout', adminLoginAuth.isLogin, userController.logout);
+user_route.get('/reset', adminLoginAuth.isLogout,  userController.reset);
+user_route.post('/reset', adminLoginAuth.isLogout,  userController.resetPassword);
+user_route.get('/forget', adminLoginAuth.isLogout,  userController.forget);
+user_route.post('/forget', adminLoginAuth.isLogout,  userController.forgetVerify);
 module.exports = user_route;

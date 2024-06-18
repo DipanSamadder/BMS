@@ -9,6 +9,12 @@
             <div class="mb-3">
                 <textarea class="w-100" name="content"  placeholder="content" required></textarea>
             </div>
+            <div class="mb-3">
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#uploadModal">
+                    Upload Image
+                  </button>
+                  <input type="hidden" name="image" id="imagePathPut">
+            </div>
             <button type="submit" class="btn btn-primary">Submit</button>
         </form>
         <% if(typeof message !== 'undefined'){ %>
@@ -18,4 +24,50 @@
             <p style="color:red"><%= error %></p>
         <% } %>
 	</div>
+
+
+    <!-- Modal -->
+<div class="modal fade" id="uploadModal" tabindex="-1" role="dialog" aria-labelledby="uploadModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+         <form id="UploadImage">
+            <input type="file" class="form-control mb-3" name="postImage" required>
+            <input type="submit" value="Upload" class="btn btn-primary">
+         </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    $(document).ready(function(){
+        $('#UploadImage').submit(function (event){
+            event.preventDefault();
+            $.ajax({
+                url:'/upload-post-image',
+                type:'Post',
+                data: new FormData(this),
+                contentType:false,
+                cache:false,
+                processData:false,
+                success:function(data){
+                    console.log(data);
+                    if(data.success == true){
+                        $('#imagePathPut').val(data.path);
+                        alert(data.msg);
+                        $('#uploadModal').modal('hide')
+                    }else{
+                        alert(data.msg);
+                    }
+                }
+            });
+        });
+    })
+
+  </script>
 <%- include("../../layouts/admin-footer.ejs") %>
