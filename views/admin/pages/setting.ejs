@@ -1,0 +1,48 @@
+<%- include("../../layouts/admin-header.ejs") %>
+    <!-- Page Content  -->
+    <div id="content" class="p-4 p-md-5 pt-5">
+        <h2 class="mb-4">Setting</h2>
+        <form action="" method="POST" id="setting">
+            <div class="mb-3">
+                <input type="text" class="w-100" name="page_limit" placeholder="Page Limit" value="<%= limit %>" required>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+        <% if(typeof message !== 'undefined'){ %>
+            <p style="color:green"><%= message %></p>
+        <% } %>
+        <% if(typeof error !== 'undefined'){ %>
+            <p style="color:red"><%= error %></p>
+        <% } %>
+	</div>
+
+
+  <script>
+    $(document).ready(function(){
+
+   
+        $('#setting').submit(function (event){
+            event.preventDefault();
+            var formData = {};
+            $.each($(this).serializeArray(), function (i, field){
+                formData[field.name] = field.value;
+            });
+            $.ajax({
+                url:'/setting',
+                type:'Post',
+                data: formData,
+                success:function(data){
+                    if(data.success == true){
+                        alert(data.msg);
+                    }else{
+                        alert(data.msg);
+                    }
+                }
+            });
+        });
+
+    });
+
+  </script>
+<%- include("../../layouts/admin-footer.ejs") %>

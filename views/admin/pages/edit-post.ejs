@@ -1,32 +1,27 @@
 <%- include("../../layouts/admin-header.ejs") %>
     <!-- Page Content  -->
     <div id="content" class="p-4 p-md-5 pt-5">
-        <h2 class="mb-4">Create Post</h2>
-        <form action="" method="POST" id="addPost">
+        <h2 class="mb-4">Update Post</h2>
+        <form action="" method="POST" id="updatePost">
             <div class="mb-3">
-                <input type="text" class="w-100" name="title" placeholder="title" required>
+                <input type="hidden" name="id" value="<%= post._id %>">
+                <input type="text" class="w-100" value="<%= post.title %>" name="title" placeholder="title" required>
             </div>
             <div class="mb-3">
-                <textarea class="w-100" name="content"  placeholder="content" required></textarea>
+                <textarea class="w-100" name="content" placeholder="content" required><%= post.content %></textarea>
             </div>
             <div class="mb-3">
                 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#uploadModal">
                     Upload Image
                   </button>
-                  <input type="hidden" name="image" id="imagePathPut">
+                  <input type="hidden" name="image" id="imagePathPut" value="<%= post.image %><">
             </div>
             <button type="submit" class="btn btn-primary">Submit</button>
         </form>
-        <% if(typeof message !== 'undefined'){ %>
-            <p style="color:green"><%= message %></p>
-        <% } %>
-        <% if(typeof error !== 'undefined'){ %>
-            <p style="color:red"><%= error %></p>
-        <% } %>
+        <p class="message"></p>
 	</div>
 
-
-    <!-- Modal -->
+<!-- Modal -->
 <div class="modal fade" id="uploadModal" tabindex="-1" role="dialog" aria-labelledby="uploadModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
@@ -44,9 +39,33 @@
       </div>
     </div>
   </div>
+
   <script>
     $(document).ready(function(){
 
+       
+
+        $('#updatePost').submit(function (event){
+            event.preventDefault();
+            var formData = {};
+
+            $.each($(this).serializeArray(), function (i, field){
+                formData[field.name] = field.value;
+            });
+
+            $.ajax({
+                url:'/update-post',
+                type:'Post',
+                data: formData,
+                success:function(data){
+                    if(data.success == true){
+                        $('.message').text(data.msg);
+                    }else{
+                        $('.message').text(data.msg);
+                    }
+                }
+            });
+        });
         $('#UploadImage').submit(function (event){
             event.preventDefault();
             $.ajax({
@@ -68,36 +87,6 @@
                 }
             });
         });
-
-        $('#addPost').submit(function (event){
-            event.preventDefault();
-            var formData = {};
-            var form = this;
-            $.each($(this).serializeArray(), function (i, field){
-                formData[field.name] = field.value;
-            });
-
-            $.ajax({
-                url:'/create-post',
-                type:'Post',
-                data: formData,
-                success:function(data){
-                    form.reset();
-                    if(data.success == true){
-                        $('#imagePathPut').val('');
-                        alert(data.msg);
-                        
-                        formData._id = data._id;
-                        var socket = io();
-                        socket.emit("new_post_by_admin", formData);
-                        
-                    }else{
-                        alert(data.msg);
-                    }
-                }
-            });
-        });
-
     });
 
   </script>

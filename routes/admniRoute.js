@@ -50,6 +50,11 @@ admin_route.get('/blog-setup', adminController.blogSetup);
 admin_route.post('/blog-setup', upload.single('blogfile'), adminController.blogSetupSave);
 
 admin_route.get('/create-post', adminLoginAuth.isLogin, adminController.loadPostCreate);
+admin_route.get('/setting', adminLoginAuth.isLogin, adminController.loadSetting);
 admin_route.post('/create-post', adminLoginAuth.isLogin, adminController.addPost);
+admin_route.post('/setting', adminLoginAuth.isLogin, adminController.updateSetting);
 admin_route.post('/upload-post-image', upload.single('postImage'), adminLoginAuth.isLogin, adminController.uploadPostImage);
+admin_route.post('/delete-post', adminLoginAuth.isLogin, adminController.deletePost);
+admin_route.post('/update-post', adminLoginAuth.isLogin, adminController.updatePost);
+admin_route.get('/edit-post/:id', adminLoginAuth.isLogin, adminController.loadEditPost);
 module.exports = admin_route;

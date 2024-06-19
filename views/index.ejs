@@ -1,12 +1,12 @@
 <%- include("layouts/header.ejs") %>
     <!-- Page Content-->
-    <div class="container px-4 px-lg-5">
+    <div class="container px-4 px-lg-5 postsList">
       <!-- Heading Row-->
 
     <% if(posts.length  > 0){ %>
-        <% posts.forEach(function(post) { %>
+        <% posts = posts.reverse(); posts.forEach(function(post) { %>
 
-            <div class="row gx-4 gx-lg-5 align-items-center my-5">
+            <div class="row gx-4 gx-lg-5 align-items-center my-5" id="postId-<%= post._id %>">
                 <div class="col-lg-7">
                     <% if(post.image !== undefined && post.image !== '') { %>
                         <img class="img-fluid rounded mb-4 mb-lg-0" src="<%= post.image %>" alt="..." />
@@ -31,4 +31,32 @@
     <%  } %>
 
   </div>
+  <script>
+    var socket = io();
+    socket.on('delete_post', function(postID){
+        document.getElementById("postId-"+postID).remove();
+    });
+    socket.on("new_post_by_admin", function(formData){
+        console.log(formData);
+        var image = 'https://dummyimage.com/900x400/dee2e6/6c757d.jpg';
+        if(formData.image !== ''){
+            image = formData.image;
+        }
+        var html = "";
+        html +=`
+            <div class="row gx-4 gx-lg-5 align-items-center my-5">
+                <div class="col-lg-7">
+                        <img class="img-fluid rounded mb-4 mb-lg-0" src="`+image+`" alt="..." />    
+                </div>
+                <div class="col-lg-5">
+                    <h1 class="font-weight-light">`+formData.title+`</h1>
+                    <p>`+formData.content+`</p>
+                    <a class="btn btn-primary" href="/post/`+formData._id+`">Call to Action!</a>
+                </div>
+            </div>
+        `;
+        $('.postsList').prepend(html);
+    });
+
+  </script>
 <%- include("layouts/footer.ejs") %>

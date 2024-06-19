@@ -59,13 +59,14 @@ const addComment = async(req, res) => {
         var email = req.body.email;
         var comment = req.body.comment;
         var comment_id = new mongoose.Types.ObjectId();
-        console.log(comment_id);
+
         const postModel = await Post.findByIdAndUpdate({_id:post_id}, {
             $push:{
                 "comments":{_id: comment_id, username: name,email:email, comment:comment}
             }
         });
-        res.status(200).send({success:true, msg:'Comment Added!'})
+        
+        res.status(200).send({success:true, msg:'Comment Added!', _id:comment_id })
     }catch(error){
         res.status(200).send({success:false, msg:error.message})
     }
@@ -93,7 +94,7 @@ const addReply = async (req, res) => {
             return res.status(200).send({ success: false, msg: 'Reply not added!' });
         }
         sendRepyMail(name, comment_email, post_id);
-        res.status(200).send({ success: true, msg: 'Reply Added!' });
+        res.status(200).send({ success: true, msg: 'Reply Added!', _id:comment_id });
     } catch (error) {
         res.status(500).send({ success: false, msg: error.message });
     }

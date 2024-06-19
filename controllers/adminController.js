@@ -1,5 +1,6 @@
 const BlogSetting = require('../models/blogSettingModels');
 const Post = require('../models/PostModels');
+const settingModels = require('../models/settingModels');
 const User = require("../models/userModels");
 const bcrypt = require("bcrypt");
 
@@ -14,7 +15,9 @@ const securePassword = async(password) => {
 
 const dashboard = async(req, res) => {
     try{
-        res.render('admin/dashboard');
+        const postData = await Post.find({});
+
+        res.render('admin/dashboard', {posts: postData});
     }catch(error){
         console.log(error.message);
     }
@@ -55,11 +58,13 @@ const addPost =  async(req, res) =>{
             imagePath = image;
         }
         const newPost = new Post({ title, content, image});
-        await newPost.save();
-        res.render('admin/pages/create-post', { message:'Post add succesfully.' });
+        const postData  = await newPost.save();
+        res.send({ success:true, msg:"Post add successfully", _id:postData._id});
+        //res.render('admin/pages/create-post', { message:'Post add succesfully.' });
 
     }catch(error){  
-        console.log(error.message);
+        res.send({ success:false, msg:error.message});
+        //console.log(error.message);
     }
 }
 
@@ -108,6 +113,73 @@ const uploadPostImage = async(req, res) =>{
     }
 }
 
+const deletePost =  async(req, res) =>{
+    try {
+        await Post.deleteOne({_id:req.body.id});
+        res.status(200).send({success:true, msg:'Post delete sucessfull.'});
+        
+    } catch (error) {
+        res.status(400).send({success:false, msg:error.message});
+    }
+}
+
+const updatePost =  async(req, res) =>{
+    try {
+        await Post.findByIdAndUpdate(
+            {_id:req.body.id},{
+                
+                $set:{
+                    title: req.body.title,
+                    content: req.body.content,
+                    image: req.body.image
+                }
+            }
+        );
+        res.status(200).send({success:true, msg:'Post delete sucessfull.'});
+        
+    } catch (error) {
+        res.status(400).send({success:false, msg:error.message});
+    }
+}
+
+const updateSetting =  async(req, res) =>{
+    try {
+       
+          await settingModels.updateOne(
+            {},
+            { page_limit: req.body.page_limit },
+            { upsert: true }
+          );
+        res.status(200).send({success:true, msg:'setting update sucessfull.'});
+        
+    } catch (error) {
+        res.status(400).send({success:false, msg:error.message});
+    }
+}
+
+
+const loadEditPost = async(req, res)=>{
+    try {
+        const postDate  = await Post.findOne({_id:req.params.id});
+        res.render("admin/pages/edit-post", {post:postDate});
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+
+const loadSetting = async(req, res)=>{
+    try {
+        var pageLimit = 0; 
+        var setting  = await settingModels.findOne({});
+        if(setting != null){
+            pageLimit = setting.page_limit;
+        }
+        res.render("admin/pages/setting", {limit:pageLimit});
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+
 module.exports = {
     blogSetup,
     blogSetupSave,
@@ -115,5 +187,10 @@ module.exports = {
     loadPostCreate,
     addPost,
     securePassword,
-    uploadPostImage
+    uploadPostImage,
+    deletePost,
+    loadEditPost,
+    updatePost,
+    loadSetting,
+    updateSetting
 }

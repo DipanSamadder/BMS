@@ -1,9 +1,60 @@
 <%- include("../layouts/admin-header.ejs") %>
        <!-- Page Content  -->
        <div id="content" class="p-4 p-md-5 pt-5">
-        <h2 class="mb-4">Sidebar #04</h2>
-        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-      </div>
+        <h2 class="mb-4">Dashboard</h2>
+        <table class="table">
+          <thead>
+            <th>#</th>
+            <th>Title</th>
+            <th>Content</th>
+            <th>Image</th>
+            <th>Action</th>
+          </thead>
+          <tbody>
+            
+            <% 
+            
+              if(posts.length > 0){ 
+              var i=1;
+              posts.forEach(function(post){
+        
+            %>
+              <tr>
+                <td><%= i++ %></td>
+                <td><%= post.title %></td>
+                <td><%= post.content %></td>
+                <td><img src="<%= post.image %>" width="100px;"></td>
+                <td><a href="/edit-post/<%= post._id %>" class="btn btn-warning" >Edit</a> | <a href="#" class="btn btn-danger deletePost" data-id="<%= post._id %>">Delete</a></td>
+              </tr>
+            <% }); }else{ %>
+              <tr colspan="5">
+                <td> Not found</td>
+              </tr>
+            <% } %>
+          </tbody>
+        </table>
 		</div>
+    <script>
+      $(document).ready(function(){
+        $('.deletePost').click(function(){
+          var postId = $(this).data('id');
+          var obj = $(this);
+          $.ajax({
+              url:'/delete-post',
+              type:'POST',
+              data:{ id:postId},
+              success:function(data){
+                if(data.success == true){
+                  $(obj).parent().parent().remove();
+                  alert(data.msg);
+                  var socket = io();
+                  socket.emit('delete_post', postId);
+                }else{
+                  alert(data.msg);
+                }
+              }
+          });
+        });
+      })
+    </script>
 <%- include("../layouts/admin-footer.ejs") %>
