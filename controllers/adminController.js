@@ -192,5 +192,5 @@ module.exports = {
     loadEditPost,
     updatePost,
     loadSetting,
-    updateSetting
+    updateSetting,
 }

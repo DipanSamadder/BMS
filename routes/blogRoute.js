@@ -5,7 +5,7 @@ const blogController = require("../controllers/blogController");
 route.set('view engine', 'ejs');
 route.set('views', './views');
 
-
+route.get('/get-post/:start/:limit',  blogController.loadPostAjax);
 route.get('/', blogController.loadBlog);
 route.get('/post/:id', blogController.loadPost);
 route.post('/add-comment', blogController.addComment)

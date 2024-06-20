@@ -2,6 +2,7 @@ const Post = require('../models/PostModels');
 const mongoose = require('mongoose');
 const nodemailer = require("nodemailer");
 const config = require("../config/config");
+const settingModels = require('../models/settingModels');
 
 const sendRepyMail = async(name, email, post_id) => {
     try{
@@ -37,10 +38,22 @@ const sendRepyMail = async(name, email, post_id) => {
 
 const loadBlog = async(req, res)=>{
     try{
-        const posts = await Post.find({});
-        res.render("index", {posts:posts});
+        var setting = await settingModels.findOne({});
+        var limit = setting.page_limit;
+ 
+        const posts = await Post.find({}).limit(limit);
+        res.render("index", {posts:posts, limit:limit});
     }catch(error){
         console.log(error.message);
+    }
+}
+
+const loadPostAjax = async(req, res)=>{
+    try{
+        const posts = await Post.find({}).skip(req.params.start).limit(req.params.limit);
+        res.send(posts);
+    }catch(error){
+        res.status(400).send({success:true, msg:error.message })
     }
 }
 
@@ -105,5 +118,6 @@ module.exports = {
     loadBlog,
     loadPost,
     addComment,
-    addReply
+    addReply,
+    loadPostAjax
 }

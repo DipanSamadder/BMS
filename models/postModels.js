@@ -60,6 +60,10 @@ const PostSchema  = mongoose.Schema({
         type:String,
         default:''
     },
+    views:{
+        type:Number,
+        default:0
+    },
     comments: [commentSchema],
     createdAt: { type: Date, default: Date.now }
 });

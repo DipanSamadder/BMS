@@ -49,6 +49,7 @@ admin_route.get('/dashboard', adminLoginAuth.isLogin, adminController.dashboard)
 admin_route.get('/blog-setup', adminController.blogSetup);
 admin_route.post('/blog-setup', upload.single('blogfile'), adminController.blogSetupSave);
 
+
 admin_route.get('/create-post', adminLoginAuth.isLogin, adminController.loadPostCreate);
 admin_route.get('/setting', adminLoginAuth.isLogin, adminController.loadSetting);
 admin_route.post('/create-post', adminLoginAuth.isLogin, adminController.addPost);

@@ -6,6 +6,14 @@
             <article>
                 <!-- Post header-->
                 <header class="mb-4">
+                    <h2>Views <span class="viewCount">
+                        <% if(post.views !== undefined){ %>
+                            <%= post.views + 1 %>
+                        <% }else{ %>
+                            1
+                        <% } %>
+                        
+                    </span></h2>
                     <!-- Post title-->
                     <h1 class="fw-bolder mb-1"><%= post.title %></h1>
                     <!-- Post meta content-->
@@ -24,7 +32,7 @@
                 </figure>
                 <!-- Post content-->
                 <section class="mb-5">
-                    <%= post.content %>
+                    <%- post.content %>
                 </section>
             </article>
             <!-- Comments section-->
@@ -112,6 +120,7 @@
 </div>
 <script>
      var socket = io();
+     var post_id = "<%= post._id %>";
     $(document).ready(function(){
        
         $('#comment_form').submit(function(event){
@@ -212,6 +221,14 @@
                 }
             });
         });
-    });
+        
+        socket.emit('page_view_count_inc', post_id);
+        socket.on('updated_post_count', function(data){
+            if(post_id == data._id){
+                $('.viewCount').text(data.views);
+            }
+        })
+        
+   });
 </script>
 <%- include("../layouts/footer.ejs") %>

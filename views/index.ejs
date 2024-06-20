@@ -16,7 +16,7 @@
                 </div>
                 <div class="col-lg-5">
                     <h1 class="font-weight-light"><%= post.title %></h1>
-                    <p><%= post.content %></p>
+                    <p><%- post.content %></p>
                     <a class="btn btn-primary" href="/post/<%= post.id %>">Call to Action!</a>
                 </div>
             </div>
@@ -29,9 +29,54 @@
         </div>
 
     <%  } %>
-
-  </div>
+        
+  </div><button class="btn" onclick="getPrev()">Prev</button>
+  <button class="btn" onclick="getNext()">Next</button>
   <script>
+    var limit = <%= limit %>;
+    var start = 0; 
+    function getNext(){
+        start += limit;
+        fatchPost(start, limit);
+    }
+    function fatchPost(start, limit){
+        $.ajax({
+            url:`/get-post/${start}/${limit}`,
+            type:'GET',
+            success:function(data){
+                load(data);
+            }
+        });
+    }
+    
+    function getPrev(){
+        start -= limit;
+        fatchPost(start, limit);
+    }
+
+    function load(data){
+        if(data.length > 0){
+            var html = "";
+            data.forEach(function(item){
+                var image = item.image? item.image: 'https://dummyimage.com/900x400/dee2e6/6c757d.jpg';
+
+                html +=`
+                    <div class="row gx-4 gx-lg-5 align-items-center my-5">
+                        <div class="col-lg-7">
+                                <img class="img-fluid rounded mb-4 mb-lg-0" src="`+image+`" alt="..." />    
+                        </div>
+                        <div class="col-lg-5">
+                            <h1 class="font-weight-light">`+item.title+`</h1>
+                            <p>`+item.content+`</p>
+                            <a class="btn btn-primary" href="/post/`+item._id+`">Call to Action!</a>
+                        </div>
+                    </div>
+                `;
+            });
+            $('.postsList').html(html);
+        }
+    }
+
     var socket = io();
     socket.on('delete_post', function(postID){
         document.getElementById("postId-"+postID).remove();

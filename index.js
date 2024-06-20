@@ -1,9 +1,12 @@
 const mongoose = require("mongoose");
 const express = require("express");
+
 const adminRoute = require("./routes/admniRoute");
 const userRoute = require("./routes/userRoute");
 const blogRoute = require("./routes/blogRoute");
 const isBlog  = require("./middlewares/isBlog");
+
+
 mongoose.connect("mongodb://localhost:27017/BMS");
 
 const app = express();
@@ -11,6 +14,7 @@ const app = express();
 var http = require('http').createServer(app);
 
 var { Server } = require('socket.io');
+const PostModels = require("./models/PostModels");
 var io = new Server(http, {});
 
 app.use(isBlog.isBlog);
@@ -46,7 +50,22 @@ io.on("connection", function(socket){
 
     socket.on('delete_post', function(data){
         socket.broadcast.emit('delete_post', data);
-    })
+    });
+
+    socket.on('page_view_count_inc', async function(post_id){
+        const count = await PostModels.findByIdAndUpdate(
+            {_id:post_id},
+            {
+                $inc: {views:1}
+            },
+            {
+                new:true
+            }
+        );
+   
+       
+        socket.broadcast.emit('updated_post_count', count);
+    });
 });
 
 http.listen(3000, function(){
